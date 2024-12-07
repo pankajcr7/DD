@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream11 Team Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00ff88;
+            --secondary-color: #0066ff;
+            --background-dark: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --text-color: #ffffff;
+            --border-color: #3a3a3a;
+        }
+
+        body {
+            background: var(--background-dark);
+            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #00000080, #00000040),
+                        repeating-linear-gradient(45deg, #00ff8810 0px, #0066ff10 2px, transparent 2px, transparent 8px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(26, 26, 26, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .section {
+            background: var(--card-bg);
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2);
+        }
+
+        .section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-control, .form-select {
+            background: var(--background-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: var(--background-dark);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 136, 0.25);
+            color: var(--text-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff3366, #ff0033);
+            border: none;
+        }
+
+        .player-input, .group-input {
+            background: rgba(42, 42, 42, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-dark);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        /* Team Cards Styling */
+        .team-card {
+            background: linear-gradient(135deg, var(--card-bg), #2d2d2d);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .team-card h5 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-card h5::before {
+            content: '🏆';
+            font-size: 1.2em;
+        }
+
+        .player-role {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin: 2px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .role-wk { background: rgba(255, 87, 51, 0.2); color: #ff5733; }
+        .role-bat { background: rgba(51, 255, 87, 0.2); color: #33ff57; }
+        .role-all { background: rgba(87, 51, 255, 0.2); color: #5733ff; }
+        .role-bowl { background: rgba(255, 51, 255, 0.2); color: #ff33ff; }
+
+        .captain-badge {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: var(--background-dark);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .vice-captain-badge {
+            background: linear-gradient(45deg, #c0c0c0, #a0a0a0);
+            color: var(--background-dark);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 26, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--border-color);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary-color), var(--secondary-color));
+            border-radius: 5px;
+        }
+
+        .selected-player {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-dark);
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0, 255, 136, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .selected-player:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .form-check {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(42, 42, 42, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .form-check:hover {
+            background: rgba(42, 42, 42, 0.8);
+        }
+
+        .form-check-label {
+            color: var(--text-color);
+            font-weight: 500;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .form-check-input {
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        #fix_players, #cap_vc_choices {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .modal {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-trophy"></i> Dream11 Team Generator</h1>
+        
+        <div class="section">
+            <h3><i class="fas fa-users"></i> Team Names</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" id="team1_name" class="form-control" placeholder="Team 1 Name">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" id="team2_name" class="form-control" placeholder="Team 2 Name">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-user-plus"></i> Team 1 Players</h3>
+            <div id="team1_players"></div>
+            <button class="btn btn-primary" onclick="addPlayer('team1_players')">
+                <i class="fas fa-plus"></i> Add Player
+            </button>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-user-plus"></i> Team 2 Players</h3>
+            <div id="team2_players"></div>
+            <button class="btn btn-primary" onclick="addPlayer('team2_players')">
+                <i class="fas fa-plus"></i> Add Player
+            </button>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-cogs"></i> Team Composition</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <label><i class="fas fa-user-shield"></i> Wicket Keeper (WK)</label>
+                    <input type="number" id="min_wk" class="form-control" placeholder="Min WK" min="1" max="4" value="1">
+                    <input type="number" id="max_wk" class="form-control mt-2" placeholder="Max WK" min="1" max="4" value="4">
+                </div>
+                <div class="col-md-3">
+                    <label><i class="fas fa-baseball-bat"></i> Batsman (BAT)</label>
+                    <input type="number" id="min_bat" class="form-control" placeholder="Min BAT" min="1" max="6" value="1">
+                    <input type="number" id="max_bat" class="form-control mt-2" placeholder="Max BAT" min="1" max="6" value="6">
+                </div>
+                <div class="col-md-3">
+                    <label><i class="fas fa-star"></i> All Rounder (ALL)</label>
+                    <input type="number" id="min_all" class="form-control" placeholder="Min ALL" min="1" max="6" value="1">
+                    <input type="number" id="max_all" class="form-control mt-2" placeholder="Max ALL" min="1" max="6" value="6">
+                </div>
+                <div class="col-md-3">
+                    <label><i class="fas fa-bowling-ball"></i> Bowler (BOWL)</label>
+                    <input type="number" id="min_bowl" class="form-control" placeholder="Min BOWL" min="1" max="8" value="1">
+                    <input type="number" id="max_bowl" class="form-control mt-2" placeholder="Max BOWL" min="1" max="8" value="6">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-thumbtack"></i> Fix Players</h3>
+            <div id="fix_players" class="row"></div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-crown"></i> Captain & Vice-Captain Choices</h3>
+            <div id="cap_vc_choices" class="row"></div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-layer-group"></i> Player Groups</h3>
+            <div id="groups"></div>
+            <button class="btn btn-primary" onclick="addGroup()">
+                <i class="fas fa-plus"></i> Add Group
+            </button>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-users-cog"></i> Contest Size</h3>
+            <input type="number" id="contest_size" class="form-control" placeholder="Number of teams to generate" min="1">
+        </div>
+
+        <button class="btn btn-primary btn-lg w-100 mb-4" onclick="generateTeams()">
+            <i class="fas fa-magic"></i> Generate Teams
+        </button>
+
+        <div id="generated_teams" class="section" style="display: none;">
+            <h3><i class="fas fa-list-alt"></i> Generated Teams</h3>
+            <div id="teams_output"></div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
