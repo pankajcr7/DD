@@ -219,10 +219,9 @@ function addPlayerWithData(containerId, playerData) {
             </select>
         </div>
         <div class="col-md-3">
-            <input type="number" class="form-control" placeholder="Selection %" min="0" max="100" value="${playerData.selection_percentage || ''}" required>
-        </div>
-        <div class="col-md-3">
-            <button class="btn btn-danger" onclick="this.parentElement.parentElement.remove(); saveCurrentData()">Remove</button>
+            <button class="btn btn-danger" onclick="this.parentElement.parentElement.remove(); saveCurrentData()">
+                Remove
+            </button>
         </div>
     `;
     
@@ -274,55 +273,30 @@ function addGroupWithData(groupData) {
 // Function to add player to a team
 function addPlayer(containerId) {
     const container = document.getElementById(containerId);
-    if (!container) {
-        console.error('Container not found:', containerId);
-        return;
-    }
+    if (!container) return;
 
-    const playerDiv = document.createElement('div');
-    playerDiv.className = 'player-input row mb-2';
-    
-    const roleOptions = {
-        cricket: [
-            '<option value="WK">Wicket Keeper (WK)</option>',
-            '<option value="BAT">Batsman (BAT)</option>',
-            '<option value="ALL">All Rounder (ALL)</option>',
-            '<option value="BOWL">Bowler (BOWL)</option>'
-        ],
-        football: [
-            '<option value="GK">Goalkeeper (GK)</option>',
-            '<option value="DEF">Defender (DEF)</option>',
-            '<option value="MID">Midfielder (MID)</option>',
-            '<option value="ST">Striker (ST)</option>'
-        ],
-        kabaddi: [
-            '<option value="DEF">Defender (DEF)</option>',
-            '<option value="ALL">All-Rounder (ALL)</option>',
-            '<option value="RAI">Raider (RAI)</option>'
-        ]
-    };
-    
-    playerDiv.innerHTML = `
-        <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Player Name" required>
-        </div>
-        <div class="col-md-3">
-            <select class="form-control" required>
-                ${roleOptions[currentSport].join('')}
-            </select>
-        </div>
-        <div class="col-md-3">
-            <input type="number" class="form-control" placeholder="Selection %" min="0" max="100" value="0" required>
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-danger" onclick="removePlayer(this)">
-                <i class="fas fa-trash"></i>
-            </button>
+    const playerInput = document.createElement('div');
+    playerInput.className = 'player-input mb-2';
+    playerInput.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Player Name">
+            </div>
+            <div class="col-md-4">
+                <select class="form-control">
+                    <option value="">Select Role</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removePlayer(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         </div>
     `;
-    
-    container.appendChild(playerDiv);
-    updateFixPlayersAndCapVC();
+
+    container.appendChild(playerInput);
+    updatePlayerRoleOptions();
     saveCurrentData();
 }
 
@@ -338,82 +312,28 @@ function removePlayer(button) {
 
 // Function to save current data
 function saveCurrentData() {
-    const sport = document.getElementById('sport_selector').value;
     const data = {
-        sport: sport,
+        sport: currentSport,
         team1_name: document.getElementById('team1_name').value,
         team2_name: document.getElementById('team2_name').value,
         team1_players: Array.from(document.querySelectorAll('#team1_players .player-input')).map(div => ({
             name: div.querySelector('input[type="text"]').value,
             role: div.querySelector('select').value,
-            selection_percentage: div.querySelector('input[type="number"]').value || "50",
-            sport: sport // Add sport to player data
+            team: 'team1'
         })).filter(p => p.name.trim() !== ''),
         team2_players: Array.from(document.querySelectorAll('#team2_players .player-input')).map(div => ({
             name: div.querySelector('input[type="text"]').value,
             role: div.querySelector('select').value,
-            selection_percentage: div.querySelector('input[type="number"]').value || "50",
-            sport: sport // Add sport to player data
-        })).filter(p => p.name.trim() !== ''),
-        team_composition: {},
-        fix_players: Array.from(document.querySelectorAll('#fix_players input:checked')).map(cb => cb.value),
-        cap_vc_choices: Array.from(document.querySelectorAll('#cap_vc_choices input:checked')).map(cb => cb.value),
-        groups: Array.from(document.querySelectorAll('.group-input')).map(groupDiv => ({
-            players: Array.from(groupDiv.querySelectorAll('.selected-player')).map(span => span.textContent.trim()),
-            min: parseInt(groupDiv.querySelector('.group-min').value),
-            max: parseInt(groupDiv.querySelector('.group-max').value)
-        })).filter(group => group.players.length > 0 && group.max > 0),
-        contest_size: parseInt(document.getElementById('contest_size').value)
+            team: 'team2'
+        })).filter(p => p.name.trim() !== '')
     };
 
-    // Add sport-specific composition
-    if (sport === 'cricket') {
-        data.team_composition = {
-            min_wk: parseInt(document.getElementById('min_wk').value),
-            max_wk: parseInt(document.getElementById('max_wk').value),
-            min_bat: parseInt(document.getElementById('min_bat').value),
-            max_bat: parseInt(document.getElementById('max_bat').value),
-            min_all: parseInt(document.getElementById('min_all').value),
-            max_all: parseInt(document.getElementById('max_all').value),
-            min_bowl: parseInt(document.getElementById('min_bowl').value),
-            max_bowl: parseInt(document.getElementById('max_bowl').value)
-        };
-    } else if (sport === 'football') {
-        data.team_composition = {
-            min_gk: parseInt(document.getElementById('min_gk').value),
-            max_gk: parseInt(document.getElementById('max_gk').value),
-            min_def: parseInt(document.getElementById('min_def').value),
-            max_def: parseInt(document.getElementById('max_def').value),
-            min_mid: parseInt(document.getElementById('min_mid').value),
-            max_mid: parseInt(document.getElementById('max_mid').value),
-            min_st: parseInt(document.getElementById('min_st').value),
-            max_st: parseInt(document.getElementById('max_st').value)
-        };
-    } else if (sport === 'kabaddi') {
-        data.team_composition = {
-            min_kdef: parseInt(document.getElementById('min_kdef').value) || 2,
-            max_kdef: parseInt(document.getElementById('max_kdef').value) || 4,
-            min_kall: parseInt(document.getElementById('min_kall').value) || 2,
-            max_kall: parseInt(document.getElementById('max_kall').value) || 3,
-            min_krai: parseInt(document.getElementById('min_krai').value) || 2,
-            max_krai: parseInt(document.getElementById('max_krai').value) || 3
-        };
-        data.kabaddi_team_size = parseInt(document.getElementById('kabaddi_team_size').value) || 7;
-    }
-
-    // Save data to server
     fetch('/save_data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
-    }).then(response => {
-        if (!response.ok) {
-            console.error('Failed to save data');
-        }
-    }).catch(error => {
-        console.error('Error saving data:', error);
     });
 }
 
@@ -581,14 +501,12 @@ function generateTeams() {
     const team1_players = Array.from(document.querySelectorAll('#team1_players .player-input')).map(div => ({
         name: div.querySelector('input[type="text"]').value,
         role: div.querySelector('select').value,
-        selection_percentage: div.querySelector('input[type="number"]').value || "50",
         team: 'team1'
     })).filter(p => p.name.trim() !== '');
     
     const team2_players = Array.from(document.querySelectorAll('#team2_players .player-input')).map(div => ({
         name: div.querySelector('input[type="text"]').value,
         role: div.querySelector('select').value,
-        selection_percentage: div.querySelector('input[type="number"]').value || "50",
         team: 'team2'
     })).filter(p => p.name.trim() !== '');
     
