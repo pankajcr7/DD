@@ -52,18 +52,21 @@ function updatePlayerRoleOptions() {
     
     const roleOptions = {
         cricket: [
+            '<option value="">Select Role</option>',
             '<option value="WK">Wicket Keeper (WK)</option>',
             '<option value="BAT">Batsman (BAT)</option>',
             '<option value="ALL">All Rounder (ALL)</option>',
             '<option value="BOWL">Bowler (BOWL)</option>'
         ],
         football: [
+            '<option value="">Select Role</option>',
             '<option value="GK">Goalkeeper (GK)</option>',
             '<option value="DEF">Defender (DEF)</option>',
             '<option value="MID">Midfielder (MID)</option>',
             '<option value="ST">Striker (ST)</option>'
         ],
         kabaddi: [
+            '<option value="">Select Role</option>',
             '<option value="DEF">Defender (DEF)</option>',
             '<option value="ALL">All-Rounder (ALL)</option>',
             '<option value="RAI">Raider (RAI)</option>'
@@ -73,11 +76,21 @@ function updatePlayerRoleOptions() {
     const options = roleOptions[currentSport].join('');
     
     team1Players.forEach(player => {
-        player.querySelector('select').innerHTML = options;
+        const select = player.querySelector('select');
+        const currentValue = select.value;
+        select.innerHTML = options;
+        if (currentValue) {
+            select.value = currentValue;
+        }
     });
     
     team2Players.forEach(player => {
-        player.querySelector('select').innerHTML = options;
+        const select = player.querySelector('select');
+        const currentValue = select.value;
+        select.innerHTML = options;
+        if (currentValue) {
+            select.value = currentValue;
+        }
     });
 }
 
