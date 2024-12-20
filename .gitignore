@@ -16,7 +16,6 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -31,11 +30,16 @@ ENV/
 *.swp
 *.swo
 
-# Project specific
-saved_data.json
-*.log
+# Database
+*.db
+*.sqlite3
+
+# Environment variables
 .env
 
-# OS specific
-.DS_Store
-Thumbs.db
+# User data
+user_data/
+data/
+
+# Logs
+*.log

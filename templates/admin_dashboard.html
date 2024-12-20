@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            margin-bottom: 30px;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .badge {
+            font-size: 0.9em;
+            padding: 8px 12px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .team-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f9fa;
+        }
+        
+        .team-header {
+            background: linear-gradient(45deg, #007bff, #6610f2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin: -15px -15px 15px -15px;
+        }
+        
+        .team-players {
+            font-size: 0.9rem;
+        }
+        
+        .teams-container {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <div class="d-flex">
+                <span class="navbar-text me-3">
+                    Welcome, {{ current_user.username }}
+                </span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <h5>Total Users</h5>
+                    <h2>{{ users|length - 1 }}</h2> <!-- Subtract 1 to exclude admin -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <h5>Active Trials</h5>
+                    <h2>{{ users|selectattr('is_trial_expired')|rejectattr('is_admin')|list|length }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <h5>Expired Trials</h5>
+                    <h2>{{ users|selectattr('is_trial_expired')|rejectattr('is_admin')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Teams Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">User Teams</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Sport</th>
+                                        <th>Teams Generated</th>
+                                        <th>Last Generated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user_teams in user_teams_data %}
+                                    <tr>
+                                        <td>{{ user_teams.username }}</td>
+                                        <td>{{ user_teams.sport }}</td>
+                                        <td>{{ user_teams.team_count }}</td>
+                                        <td>{{ user_teams.last_generated }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" onclick="viewUserTeams('{{ user_teams.user_id }}', '{{ user_teams.sport }}')">
+                                                View Teams
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-container">
+            <h3 class="mb-4">User Management</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                            <th>Trial End Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        {% if not user.is_admin %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.registration_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if user.trial_end_date %}
+                                    {{ user.trial_end_date.strftime('%Y-%m-%d %H:%M') }}
+                                {% else %}
+                                    <span class="text-muted">Not Set</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_trial_expired() %}
+                                    <span class="badge bg-danger">Trial Expired</span>
+                                {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <div class="input-group" style="width: 200px;">
+                                        <input type="number" class="form-control form-control-sm" 
+                                               id="trial-days-{{user.id}}" placeholder="Days">
+                                        <button class="btn btn-outline-primary btn-sm" 
+                                                onclick="updateTrial('{{user.id}}')">
+                                            Update Trial
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-sm btn-{{ 'danger' if user.is_active else 'success' }}"
+                                            onclick="toggleUser('{{user.id}}')">
+                                        {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing teams -->
+    <div class="modal fade" id="teamsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Generated Teams</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="teamsModalBody">
+                    <!-- Teams will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateTrial(userId) {
+            const days = document.getElementById(`trial-days-${userId}`).value;
+            if (!days) {
+                alert('Please enter the number of days');
+                return;
+            }
+
+            fetch(`/admin/update_trial/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `trial_days=${days}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    alert('Trial period updated successfully');
+                    location.reload();
+                } else {
+                    alert(data.error || 'Error updating trial period');
+                }
+            })
+            .catch(error => {
+                alert('Error updating trial period');
+                console.error('Error:', error);
+            });
+        }
+
+        function toggleUser(userId) {
+            if (!confirm('Are you sure you want to change this user\'s status?')) {
+                return;
+            }
+
+            fetch(`/admin/toggle_user/${userId}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'Error changing user status');
+                }
+            })
+            .catch(error => {
+                alert('Error changing user status');
+                console.error('Error:', error);
+            });
+        }
+
+        function viewUserTeams(userId, sport) {
+            $.get(`/admin/user_teams/${userId}/${sport}`)
+                .done(function(data) {
+                    let teamsHtml = '<div class="teams-container">';
+                    
+                    if (data.teams && data.teams.length > 0) {
+                        data.teams.forEach((team, index) => {
+                            teamsHtml += `
+                                <div class="team-card mb-3">
+                                    <h6 class="team-header">Team ${index + 1}</h6>
+                                    <div class="team-players">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>Captain:</strong> ${team.captain}<br>
+                                                <strong>Vice Captain:</strong> ${team.vice_captain}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Players:</strong><br>
+                                                ${team.players.map(p => p.name || p).join('<br>')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        });
+                    } else {
+                        teamsHtml += '<div class="alert alert-info">No teams found for this user.</div>';
+                    }
+                    
+                    teamsHtml += '</div>';
+                    $('#teamsModalBody').html(teamsHtml);
+                    $('#teamsModal').modal('show');
+                })
+                .fail(function(error) {
+                    console.error('Error:', error);
+                    alert('Error loading teams');
+                });
+        }
+    </script>
+</body>
+</html>

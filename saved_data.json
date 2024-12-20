@@ -1,0 +1,204 @@
+{
+    "team1_name": "CRO",
+    "team2_name": "ITA",
+    "team1_players": [
+        {
+            "name": "HOPE",
+            "role": "ALL",
+            "selection_percentage": "24"
+        },
+        {
+            "name": "S RUTHERFRD",
+            "role": "DEF",
+            "selection_percentage": "74"
+        },
+        {
+            "name": "B KING",
+            "role": "DEF",
+            "selection_percentage": "51"
+        },
+        {
+            "name": "E LEWIS",
+            "role": "DEF",
+            "selection_percentage": "94"
+        },
+        {
+            "name": "K CARTY",
+            "role": "DEF",
+            "selection_percentage": "48"
+        },
+        {
+            "name": "R SHEPHRD",
+            "role": "DEF",
+            "selection_percentage": "11"
+        },
+        {
+            "name": "R CHASE",
+            "role": "DEF",
+            "selection_percentage": "10"
+        },
+        {
+            "name": "J GREAVES",
+            "role": "DEF",
+            "selection_percentage": "2"
+        },
+        {
+            "name": "MOTIE",
+            "role": "DEF",
+            "selection_percentage": "1"
+        },
+        {
+            "name": "A JOSEPH",
+            "role": "DEF",
+            "selection_percentage": "5"
+        },
+        {
+            "name": "J SEALA",
+            "role": "DEF",
+            "selection_percentage": "5"
+        }
+    ],
+    "team2_players": [
+        {
+            "name": "L DAS",
+            "role": "DEF",
+            "selection_percentage": "82"
+        },
+        {
+            "name": "J ALI",
+            "role": "DEF",
+            "selection_percentage": "73"
+        },
+        {
+            "name": "T HASAN",
+            "role": "DEF",
+            "selection_percentage": "41"
+        },
+        {
+            "name": "A HOSSAIN",
+            "role": "DEF",
+            "selection_percentage": "10"
+        },
+        {
+            "name": "M HASAN MIR",
+            "role": "DEF",
+            "selection_percentage": "9"
+        },
+        {
+            "name": "S SARKAR",
+            "role": "DEF",
+            "selection_percentage": "99"
+        },
+        {
+            "name": "R HOSSAIN",
+            "role": "DEF",
+            "selection_percentage": "69"
+        },
+        {
+            "name": "T AHMED",
+            "role": "DEF",
+            "selection_percentage": "18"
+        },
+        {
+            "name": "T SAKIB",
+            "role": "DEF",
+            "selection_percentage": "88"
+        },
+        {
+            "name": "N RANA",
+            "role": "DEF",
+            "selection_percentage": "37"
+        },
+        {
+            "name": "MAHMDULHH",
+            "role": "DEF",
+            "selection_percentage": "33"
+        }
+    ],
+    "team_composition": {
+        "min_wk": 1,
+        "max_wk": 2,
+        "min_bat": 2,
+        "max_bat": 4,
+        "min_all": 3,
+        "max_all": 5,
+        "min_bowl": 2,
+        "max_bowl": 4,
+        "min_gk": 1,
+        "max_gk": 1,
+        "min_def": 3,
+        "max_def": 5,
+        "min_mid": 3,
+        "max_mid": 5,
+        "min_st": 1,
+        "max_st": 3,
+        "min_kdef": 2,
+        "max_kdef": 4,
+        "min_kall": 2,
+        "max_kall": 3,
+        "min_krai": 2,
+        "max_krai": 3
+    },
+    "fix_players": [
+        "HOPE",
+        "M HASAN MIR"
+    ],
+    "cap_vc_choices": [
+        "HOPE",
+        "S RUTHERFRD",
+        "B KING",
+        "E LEWIS",
+        "R SHEPHRD",
+        "R CHASE",
+        "MOTIE",
+        "A JOSEPH",
+        "L DAS",
+        "M HASAN MIR",
+        "S SARKAR",
+        "R HOSSAIN",
+        "T AHMED",
+        "T SAKIB",
+        "MAHMDULHH"
+    ],
+    "groups": [
+        {
+            "players": [
+                "E LEWIS",
+                "K CARTY",
+                "R HOSSAIN",
+                "T SAKIB"
+            ],
+            "min": 2,
+            "max": 3
+        },
+        {
+            "players": [
+                "S RUTHERFRD",
+                "B KING",
+                "R SHEPHRD",
+                "R CHASE",
+                "MOTIE",
+                "A JOSEPH",
+                "L DAS",
+                "S SARKAR",
+                "T AHMED",
+                "MAHMDULHH"
+            ],
+            "min": 4,
+            "max": 6
+        },
+        {
+            "players": [
+                "J GREAVES",
+                "J SEALA",
+                "J ALI",
+                "T HASAN",
+                "A HOSSAIN",
+                "N RANA"
+            ],
+            "min": 2,
+            "max": 3
+        }
+    ],
+    "contest_size": 4
+}
